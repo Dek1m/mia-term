@@ -89,11 +89,11 @@ class TermProvider:
     async def attach_pty(self, websocket: Any, session_id: str, user_id: str, username: str | None) -> None:
         uid = self._uid(user_id)
         self._row(session_id, uid)
-        login = username or self._username(uid)
         if self._fs is None:
             raise TermError("FS is required", "TERM_ERROR")
         info = self._fs.ensure_home(uid)
-        account = account_from_fs(info, login)
+        display = str(info.get("username") or username or self._username(uid))
+        account = account_from_fs(info, display)
         self._db.execute(
             "UPDATE term.sessions SET status = 'open', cwd = %s, updated_at = NOW() WHERE id = %s",
             str(account.home),

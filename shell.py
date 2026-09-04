@@ -41,6 +41,7 @@ class LiveShell:
             "TERM": "xterm-256color",
             "PATH": "/usr/local/bin:/usr/bin:/bin",
             "LANG": "C.UTF-8",
+            "PS1": f"\\[\\033[01;32m\\]{account.name}@belle\\[\\033[01;34m\\] \\w \\$\\[\\033[00m\\] ",
         }
 
         def preexec() -> None:
@@ -54,7 +55,7 @@ class LiveShell:
             os.setuid(account.uid)
 
         self._proc = subprocess.Popen(
-            ["/bin/bash", "-l"],
+            ["/bin/bash", "--noprofile", "--rcfile", str(account.home / ".bashrc"), "-i"],
             stdin=slave,
             stdout=slave,
             stderr=slave,

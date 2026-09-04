@@ -51,16 +51,12 @@ alias ls='ls --color=auto'
 alias grep='grep --colour=auto'
 PS1='\\[\\033[01;32m\\]{name}@belle\\[\\033[01;34m\\] \\w \\$\\[\\033[00m\\] '
 """
-    _dotfile(home / ".bashrc", bashrc, uid, gid, replace_marker=_MARKER)
-    _dotfile(home / ".bash_profile", _PROFILE, uid, gid)
+    rc = home / ".bashrc"
+    rc.write_text(bashrc, encoding="utf-8")
+    os.chown(rc, uid, gid)
+    os.chmod(rc, 0o644)
+    profile = home / ".bash_profile"
+    profile.write_text(_PROFILE, encoding="utf-8")
+    os.chown(profile, uid, gid)
+    os.chmod(profile, 0o644)
     return Account(name, login, home, uid, gid)
-
-
-def _dotfile(path: Path, content: str, uid: int, gid: int, replace_marker: str | None = None) -> None:
-    if path.exists():
-        raw = path.read_text(encoding="utf-8")
-        if replace_marker is None or not raw.startswith(replace_marker):
-            return
-    path.write_text(content, encoding="utf-8")
-    os.chown(path, uid, gid)
-    os.chmod(path, 0o644)
