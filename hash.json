@@ -1,10 +1,13 @@
 {
   "version": "0.1.0",
   "files": {
-    "__init__.py": "ffd8e919be7987c10b71d1fa560034b2eb387134c3261d97de3a6f7b9fb5e1a4",
-    "config.py": "4cf8088e1fada21097e0f452185bca7f8f7c362100ced87f6c32400822d13c72",
-    "provider.py": "1a0a4af2fcdf7690889b790207b974b2a9d3f0aa8d32ea5c9cd3f1148ab1bfed",
-    "schema.py": "cba45bf5a4ee232e8504cad2de62bf748e32ce50ce2d370827d375fc3054f82c"
+    "__init__.py": "f9384b4c444070d442b4579414e42de56939faf5686174668396e8bfe9c52b35",
+    "config.py": "1928cdfc0820c1e171703e77f53673b649a3667e5b5a380d565a483065099b3e",
+    "errors.py": "b8d72edaed7411b92b2da791bb999dbfd045a757d361078a316dbaffeeaeca14",
+    "linux.py": "544b9bf83d65f3def7d025029fff36be4603fe3a9c51db4b09b65bd1a0c9a8b4",
+    "provider.py": "90983c409137d4dc478bba2d052b6a1ad10b9948a674acdbdc6c19ebc78ebe99",
+    "schema.py": "cba45bf5a4ee232e8504cad2de62bf748e32ce50ce2d370827d375fc3054f82c",
+    "shell.py": "a78daa5d830165874e9b9c1e15dcd2249884d676a6f52e5d8d4b8b0c7d723740"
   },
-  "manifest_hash": "59cdbde47763172ec4d163bd9eeba338f3320a363e666da5a463952f85d9527d"
+  "manifest_hash": "df7b40e0f0640c0d8413aaad529ed34c61c16de969da4e325bd67e9815486571"
 }

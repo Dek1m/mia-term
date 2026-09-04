@@ -29,7 +29,7 @@ class TermModule(ModuleBase):
         return ModuleMeta(
             dependencies=["db", "auth", "log"],
             cache_rules={},
-            timeout_defaults={"exec": 20.0, "sessions_list": 5.0},
+            timeout_defaults={"sessions_list": 5.0, "session_create": 5.0},
             load_on="all",
             is_system=False,
             display_name="Terminal",
