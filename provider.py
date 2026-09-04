@@ -7,17 +7,18 @@ from core.task_decorator import task
 
 from .config import TermConfig
 from .errors import ForbiddenError, NotFoundError, TermError
-from .linux import ensure_account, linux_name
+from .linux import account_from_fs, linux_name
 from .shell import LiveShell, bridge
 
 __all__ = ["TermProvider", "TermError", "ForbiddenError", "NotFoundError"]
 
 
 class TermProvider:
-    def __init__(self, database: Any, log: Any, config: TermConfig) -> None:
+    def __init__(self, database: Any, log: Any, config: TermConfig, fs: Any | None = None) -> None:
         self._db = database
         self._log = log
         self._config = config
+        self._fs = fs
 
     def _uid(self, session_user_id: str | None) -> str:
         if not session_user_id:
@@ -64,6 +65,8 @@ class TermProvider:
         uid = self._uid(_session_user_id)
         username = self._username(uid)
         cwd = f"{self._config.home_root.rstrip('/')}/{linux_name(username)}"
+        if self._fs is not None:
+            cwd = str(self._fs.home_for(uid))
         name = (title or "").strip() or "Terminal"
         rows = self._db.fetch(
             "INSERT INTO term.sessions (user_id, title, cwd, status) "
@@ -87,7 +90,10 @@ class TermProvider:
         uid = self._uid(user_id)
         self._row(session_id, uid)
         login = username or self._username(uid)
-        account = ensure_account(login, self._config.home_root)
+        if self._fs is None:
+            raise TermError("FS is required", "TERM_ERROR")
+        info = self._fs.ensure_home(uid)
+        account = account_from_fs(info, login)
         self._db.execute(
             "UPDATE term.sessions SET status = 'open', cwd = %s, updated_at = NOW() WHERE id = %s",
             str(account.home),

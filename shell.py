@@ -48,7 +48,7 @@ class LiveShell:
             os.chdir(account.home)
             os.setgid(account.gid)
             try:
-                os.initgroups(account.name, account.gid)
+                os.initgroups(account.login, account.gid)
             except OSError:
                 pass
             os.setuid(account.uid)

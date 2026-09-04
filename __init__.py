@@ -27,7 +27,7 @@ class TermModule(ModuleBase):
     @property
     def meta(self) -> ModuleMeta:
         return ModuleMeta(
-            dependencies=["db", "auth", "log"],
+            dependencies=["db", "auth", "log", "fs"],
             cache_rules={},
             timeout_defaults={"sessions_list": 5.0, "session_create": 5.0},
             load_on="all",
@@ -47,7 +47,7 @@ class TermModule(ModuleBase):
 
         database = state.services.resolve(DatabaseProvider)
         self.apply_schema(state)
-        self._provider = TermProvider(database, self._log, self._config)
+        self._provider = TermProvider(database, self._log, self._config, getattr(state, "fs", None))
         state.services.register(TermProvider, self._provider)
         if self._log is not None:
             self._log.info("term_module_loaded", extra={"version": self.version})
