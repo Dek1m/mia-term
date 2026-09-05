@@ -1,13 +1,16 @@
 {
   "version": "0.1.0",
   "files": {
-    "__init__.py": "022b0d20283c1de90012c48b6cecdc91a6edb02b0679811393389cab555b6246",
+    "__init__.py": "3328826f159e4b836679aa4dc9428909000d43c81bf907e7c4b6d38faa4567e0",
     "config.py": "1928cdfc0820c1e171703e77f53673b649a3667e5b5a380d565a483065099b3e",
     "errors.py": "b8d72edaed7411b92b2da791bb999dbfd045a757d361078a316dbaffeeaeca14",
     "linux.py": "5b18bf5649c4dde7147ac6161e445aeacfae4aa7b1f58884435304f572a5c1b9",
-    "provider.py": "328f57f34ac7df6101ea197576f6d385f5fc2f6b5e815ffca377ca95d3a77aa0",
-    "schema.py": "cba45bf5a4ee232e8504cad2de62bf748e32ce50ce2d370827d375fc3054f82c",
-    "shell.py": "43394acfac9bc6b2265ecacb0909e12056aedc2fcbf2e2daac62a503fddfa0bc"
+    "provider.py": "9f9a3b2efee442a39b0cbb5c02183bc4903f7b7488c0e564461d8cbe03216eeb",
+    "schema.py": "1f782820e927a04edae21b260ac2f44976c105ec86bcae568c11c9a31c60897c",
+    "shell.py": "43394acfac9bc6b2265ecacb0909e12056aedc2fcbf2e2daac62a503fddfa0bc",
+    "tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/test_linux.py": "5ba43c77da6f696b05523e38094ac5f0e5e4a1ceb4b3e4d7e8fb220b81e737ab",
+    "tests/test_schema.py": "d19da13a6945910e40a7bd653c8043a2b6471b637862c59c51a49322bb88dfb0"
   },
-  "manifest_hash": "ba107a53615ff47abb8ef3d04bf7309081d2cf3212b36b5ff2da73787b381784"
+  "manifest_hash": "612664f865cb8d9acac075bf95e01e8910d7ed0d45d354f196f72e050e29c3ed"
 }

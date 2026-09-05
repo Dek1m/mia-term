@@ -1,6 +1,7 @@
 """Term RPC — именованные PTY-сессии как login в /home/{username}."""
 from __future__ import annotations
 
+import asyncio
 from typing import Any
 
 from core.task_decorator import task
@@ -51,7 +52,7 @@ class TermProvider:
             "updated_at": row.get("updated_at").isoformat() if hasattr(row.get("updated_at"), "isoformat") else row.get("updated_at"),
         }
 
-    @task(type="database", api=True, name="sessions_list")
+    @task(type="database", api=True, name="sessions_list", permission="term:access")
     def sessions_list(self, _session_user_id: str | None = None) -> dict[str, Any]:
         uid = self._uid(_session_user_id)
         rows = self._db.fetch(
@@ -60,7 +61,7 @@ class TermProvider:
         )
         return {"items": [self._public(row) for row in rows]}
 
-    @task(type="database", api=True, name="session_create")
+    @task(type="database", api=True, name="session_create", permission="term:access")
     def session_create(self, title: str | None = None, _session_user_id: str | None = None) -> dict[str, Any]:
         uid = self._uid(_session_user_id)
         username = self._username(uid)
@@ -79,7 +80,7 @@ class TermProvider:
             raise TermError("Create failed", "DATABASE_ERROR")
         return self._public(rows[0])
 
-    @task(type="database", api=True, name="session_delete")
+    @task(type="database", api=True, name="session_delete", permission="term:access")
     def session_delete(self, session_id: str, _session_user_id: str | None = None) -> dict[str, Any]:
         uid = self._uid(_session_user_id)
         self._row(session_id, uid)
@@ -87,14 +88,17 @@ class TermProvider:
         return {"ok": True}
 
     async def attach_pty(self, websocket: Any, session_id: str, user_id: str, username: str | None) -> None:
+        # Sync DB/fs вызовы — в to_thread: attach живёт в event loop rest-процесса,
+        # блокирующий psycopg/mkdir не должен останавливать остальные запросы.
         uid = self._uid(user_id)
-        self._row(session_id, uid)
+        await asyncio.to_thread(self._row, session_id, uid)
         if self._fs is None:
             raise TermError("FS is required", "TERM_ERROR")
-        info = self._fs.ensure_home(uid)
-        display = str(info.get("username") or username or self._username(uid))
+        info = await asyncio.to_thread(self._fs.ensure_home, uid)
+        display = str(info.get("username") or username or await asyncio.to_thread(self._username, uid))
         account = account_from_fs(info, display)
-        self._db.execute(
+        await asyncio.to_thread(
+            self._db.execute,
             "UPDATE term.sessions SET status = 'open', cwd = %s, updated_at = NOW() WHERE id = %s",
             str(account.home),
             session_id,
@@ -107,7 +111,8 @@ class TermProvider:
             await bridge(websocket, shell)
         finally:
             shell.close()
-            self._db.execute(
+            await asyncio.to_thread(
+                self._db.execute,
                 "UPDATE term.sessions SET status = 'idle', updated_at = NOW() WHERE id = %s",
                 session_id,
             )

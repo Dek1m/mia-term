@@ -57,6 +57,8 @@ class TermModule(ModuleBase):
 
         from modules.db.provider import DatabaseProvider
 
+        from .schema import TERM_AUTH_SCHEMA
+
         database = state.services.resolve(DatabaseProvider)
         database.register_schema(
             "term",
@@ -64,6 +66,26 @@ class TermModule(ModuleBase):
             schema_name="term",
             ddl_dir=str(Path(__file__).resolve().parent / "ddl"),
         )
+        # Auth-права по образцу llm: registry.register_sync + сид Everyone прямым
+        # SQL в auth.* (идемпотентно, ON CONFLICT DO NOTHING). Everyone — чтобы
+        # существующие пользователи не потеряли доступ к терминалу.
+        try:
+            from modules.auth.provider import AuthProvider
+
+            auth = state.services.resolve(AuthProvider)
+            if auth.registry is not None:
+                auth.registry.register_sync("term", TERM_AUTH_SCHEMA, is_builtin=False)
+            database.execute(
+                "INSERT INTO auth.group_roles (group_id, role_id) "
+                "SELECT g.id, r.id FROM auth.groups g CROSS JOIN auth.roles r "
+                "WHERE g.name = %s AND r.name = %s "
+                "ON CONFLICT (group_id, role_id) DO NOTHING",
+                "Everyone",
+                "term_user",
+            )
+        except Exception as exc:
+            if self._log is not None:
+                self._log.warning("term_auth_schema_skipped", extra={"error": str(exc)})
 
     def on_unload(self) -> None:
         self._provider = None
